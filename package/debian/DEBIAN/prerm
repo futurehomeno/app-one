@@ -1,0 +1,8 @@
+#!/bin/sh
+set -e
+
+if [ -d /run/systemd/system ] && [ "$1" = remove ]; then
+  deb-systemd-invoke stop app-one.service >/dev/null
+  systemctl disable app-one.service || true
+  rm /var/log/thingsplex/app-one/* || true
+fi

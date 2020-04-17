@@ -1,0 +1,1 @@
+{"instance_address":"1","mqtt_server_uri":"tcp://localhost:1883","mqtt_server_username":"","mqtt_server_password":"","mqtt_client_id_prefix":"app-one","log_file":"/var/log/thingsplex/app-one/app-one.log","log_level":"debug","log_format":"text","work_dir":"/opt/thingsplex/app-one","configured_at":"2020-03-31T11:37:30+02:00","configured_by":"auto","param_1":true,"param_3":null}

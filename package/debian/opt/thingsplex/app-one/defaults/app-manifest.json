@@ -1,0 +1,282 @@
+{
+  "configs":[
+    {
+      "id": "param_1",
+      "label": {"en": "Param 1"},
+      "val_t": "bool",
+      "ui": {
+        "type": "radio",
+        "select": [{"val": true,"label": {"en": "Option 1"}},{"val": false,"label": {"en": "Option 2"}}]
+      },
+      "val": {
+        "default": false
+      },
+      "is_required": true,
+      "config_point": "init"
+    },
+    {
+      "id": "param_2",
+      "label": {"en": "Parameter 2"},
+      "val_t": "string",
+      "ui": {
+        "type": "select",
+        "select": [{"val": "o1","label": {"en": "Option 1"}},{"val": "o2","label":{"en": "Option 2"}}]
+      },
+      "val": {
+        "default": "o1"
+      },
+      "is_required": true,
+      "config_point": "any"
+    },
+    {
+      "id": "param_3",
+      "label": {"en": "Parameter 3"},
+      "val_t": "str_map",
+      "ui": {
+        "type": "multi_select",
+        "select": [{"val": "o1","label": {"en": "Option 1"}},{"val": "o2","label": {"en": "Option 2"}},{"val":"o3", "label": {"en": "Option 3"}}]
+      },
+      "val": {
+        "default": ["o1","o2"]
+      },
+      "is_required": true,
+      "config_point": "init"
+    },
+    {
+      "id": "param_4",
+      "label": {"en": "Current time"},
+      "val_t": "string",
+      "ui": {
+        "type": "string"
+      },
+      "val": {
+        "default": ""
+      },
+      "is_required": false,
+      "config_point": "any"
+    },{
+      "id": "param_5",
+      "label": {"en": "Readonly text"},
+      "val_t": "string",
+      "ui": {
+        "type": "readonly"
+      },
+      "val": {
+        "default": "default"
+      },
+      "is_required": false,
+      "config_point": "any"
+    },{
+      "id": "param_6",
+      "label": {"en": "Number type param_5"},
+      "val_t": "int",
+      "ui": {
+        "type": "number"
+      },
+      "val": {
+        "default": 0
+      },
+      "is_required": false,
+      "config_point": "any"
+    }, {
+      "id": "log_level",
+      "label": {"en": "Set app log level"},
+      "val_t": "string",
+      "ui": {
+        "type": "select",
+        "select": [{"val": "trace","label": {"en": "Trace"}},{"val": "debug","label": {"en": "Debug"}},{"val": "info","label":{"en": "Info"}}]
+      },
+      "val": {
+        "default": "o1"
+      },
+      "is_required": true,
+      "config_point": "any"
+    },  {
+      "id": "auth_type",
+      "label": {"en": "Select auth method"},
+      "val_t": "string",
+      "ui": {
+        "type": "select",
+        "select": [{"val": "password","label": {"en": "Password"}},{"val": "oauth2_code_grant","label":{"en": "OAuth code grant"}}]
+      },
+      "val": {
+        "default": "password"
+      },
+      "is_required": true,
+      "config_point": "any"
+    }
+
+  ],
+  "ui_buttons": [
+    {
+      "id":"fh.default.sync",
+      "label": {"en": "Sync"},
+      "req": {
+        "serv":"app-one",
+        "intf_t": "cmd.system.sync",
+        "val": "action1"
+      },
+      "reload_config": true
+    },
+    {
+      "id":"reconnect",
+      "label": {"en": "Reconnect"},
+      "req": {
+        "serv":"app-one",
+        "intf_t": "cmd.system.reconnect",
+        "val": "action2"
+      },
+      "reload_config": true
+    },{
+      "id":"factory_reset",
+      "label": {"en": "Factory reset"},
+      "req": {
+        "serv":"app-one",
+        "intf_t": "cmd.app.factory_reset",
+        "val": "action2"
+      },
+      "reload_config": true
+    }
+
+  ],
+  "ui_blocks": [
+    {
+      "header": {"en": "App configuration"},
+      "text": {"en": ""},
+      "configs": ["param_1","param_2","param_3","param_5","param_6"],
+      "buttons": ["reconnect"],
+      "footer": {"en": "footer text"}
+    },
+    {
+      "header": {"en": "Security"},
+      "text": {"en": ""},
+      "configs": ["param_4","log_level","auth_type"],
+      "buttons": [],
+      "footer": {"en": "footer text"}
+    },{
+      "header": {"en": "Factory reset"},
+      "text": {"en": "The operation can't be undone"},
+      "configs": [],
+      "buttons": ["factory_reset"],
+      "footer": {"en": ""}
+    }
+  ],
+  "auth": {
+    "type": "oauth2_code_grant",
+    "redirect_url": "",
+    "client_id": "",
+    "partner_id": "",
+    "auth_endpoint": ""
+  },
+  "init_flow":["auth","connect"],
+  "services": [
+    {
+      "name": "hue",
+      "alias": "Network managment",
+      "address": "/rt:ad/rn:hue/ad:1",
+      "interfaces": [
+        {
+          "intf_t": "in",
+          "msg_t": "cmd.app.get_manifest",
+          "val_t": "null",
+          "ver": "1"
+        },
+        {
+          "intf_t": "in",
+          "msg_t": "cmd.system.sync",
+          "val_t": "null",
+          "ver": "1"
+        },
+        {
+          "intf_t": "in",
+          "msg_t": "cmd.system.reconnect",
+          "val_t": "null",
+          "ver": "1"
+        },
+        {
+          "intf_t": "out",
+          "msg_t": "evt.app.manifest_report",
+          "val_t": "object",
+          "ver": "1"
+        },{
+          "intf_t": "out",
+          "msg_t": "cmd.app.get_full_state",
+          "val_t": "string",
+          "ver": "1"
+        },{
+          "intf_t": "out",
+          "msg_t": "cmd.app.full_state_report",
+          "val_t": "object",
+          "ver": "1"
+        },{
+          "intf_t": "in",
+          "msg_t": "cmd.config.extended_set",
+          "val_t": "str_map",
+          "ver": "1"
+        },{
+          "intf_t": "in",
+          "msg_t": "cmd.auth.set_tokens",
+          "val_t": "str_map",
+          "ver": "1"
+        },
+        {
+          "intf_t": "out",
+          "msg_t": "evt.auth.login_report",
+          "val_t": "string",
+          "ver": "1"
+        },
+        {
+          "intf_t": "in",
+          "msg_t": "cmd.network.get_all_nodes",
+          "val_t": "null",
+          "ver": "1"
+        },
+        {
+          "intf_t": "in",
+          "msg_t": "cmd.thing.get_inclusion_report",
+          "val_t": "string",
+          "ver": "1"
+        },
+        {
+          "intf_t": "in",
+          "msg_t": "cmd.thing.inclusion",
+          "val_t": "string",
+          "ver": "1"
+        },
+        {
+          "intf_t": "in",
+          "msg_t": "cmd.thing.delete",
+          "val_t": "string",
+          "ver": "1"
+        },
+        {
+          "intf_t": "out",
+          "msg_t": "evt.thing.inclusion_report",
+          "val_t": "object",
+          "ver": "1"
+        },
+        {
+          "intf_t": "out",
+          "msg_t": "evt.thing.exclusion_report",
+          "val_t": "object",
+          "ver": "1"
+        },
+        {
+          "intf_t": "out",
+          "msg_t": "evt.network.all_nodes_report",
+          "val_t": "object",
+          "ver": "1"
+        },
+        {
+          "intf_t": "in",
+          "msg_t": "cmd.log.set_level",
+          "val_t": "string",
+          "ver": "1"
+        }
+      ]
+    }
+  ],
+  "app_state": {
+
+  }
+}

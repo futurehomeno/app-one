@@ -1,0 +1,31 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = "configure" ]
+then
+  groupadd -r thingsplex || true
+  groupadd -r app-one || true
+
+  useradd -r -N -M -d / -s /bin/false -g thingsplex app-one || true
+
+  chown -R app-one:thingsplex /var/log/thingsplex/app-one/ || true
+  chown -R app-one:app-one /opt/thingsplex/app-one/ || true
+fi
+
+deb-systemd-helper unmask app-one.service >/dev/null || true
+
+if deb-systemd-helper --quiet was-enabled app-one.service; then
+  systemctl enable app-one.service || true
+else
+  deb-systemd-helper update-state app-one.service >/dev/null || true
+fi
+
+if [ -d /run/systemd/system ]; then
+  systemctl --system daemon-reload >/dev/null || true
+
+  if [ -n "$2" ]; then
+    deb-systemd-invoke try-restart app-one.service >/dev/null || true
+  else
+    deb-systemd-invoke start app-one.service >/dev/null || true
+  fi
+fi
