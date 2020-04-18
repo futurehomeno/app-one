@@ -89,6 +89,19 @@ func (fc *FromFimpRouter) routeFimpMessage(newMsg *fimpgo.Message) {
 				fc.mqt.Publish(adr,msg)
 			}
 
+		case "cmd.auth.logout":
+			status := model.AuthStatus{
+				Status:    model.AuthStateNotAuthenticated,
+				ErrorText: "",
+				ErrorCode: "",
+			}
+			fc.appLifecycle.SetAuthState(model.AuthStateNotAuthenticated)
+			msg := fimpgo.NewMessage("evt.auth.status_report",model.ServiceName,fimpgo.VTypeObject,status,nil,nil,newMsg.Payload)
+			if err := fc.mqt.RespondToRequest(newMsg.Payload,msg); err != nil {
+				// if response topic is not set , sending back to default application event topic
+				fc.mqt.Publish(adr,msg)
+			}
+
 		case "cmd.auth.set_tokens":
 			authReq := model.SetTokens{}
 			err := newMsg.Payload.GetObjectValue(&authReq)

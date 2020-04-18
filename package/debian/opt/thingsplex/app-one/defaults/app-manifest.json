@@ -162,9 +162,11 @@
     }
   ],
   "auth": {
-    "type": "oauth2_code_grant",
+    "type": "password",
+    "code_grant_login_page_url" : "",
     "redirect_url": "",
     "client_id": "",
+    "secret": "",
     "partner_id": "",
     "auth_endpoint": ""
   },
