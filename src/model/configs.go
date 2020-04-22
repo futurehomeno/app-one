@@ -2,7 +2,11 @@ package model
 
 import (
 	"encoding/json"
+	"fmt"
+	log "github.com/sirupsen/logrus"
+	"github.com/thingsplex/app-one/utils"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"time"
 )
@@ -19,7 +23,7 @@ type Configs struct {
 	LogFile               string `json:"log_file"`
 	LogLevel              string `json:"log_level"`
 	LogFormat             string `json:"log_format"`
-	WorkDir               string `json:"work_dir"`
+	WorkDir               string `json:"-"`
 	ConfiguredAt          string `json:"configured_at"`
 	ConfiguredBy          string `json:"configured_by"`
 	Param1                bool   `json:"param_1"`
@@ -31,8 +35,19 @@ type Configs struct {
 	AuthType              string `json:"auth_type"`
 }
 
-func NewConfigs(path string) *Configs {
-	return &Configs{path:path}
+func NewConfigs(workDir string) *Configs {
+	conf := &Configs{WorkDir: workDir}
+	conf.path = filepath.Join(workDir,"data","config.json")
+	if !utils.FileExists(conf.path) {
+		log.Info("Config file doesn't exist.Loading default config")
+		defaultConfigFile := filepath.Join(workDir,"defaults","config.json")
+		err := utils.CopyFile(defaultConfigFile,conf.path)
+		if err != nil {
+			fmt.Print(err)
+			panic("Can't copy config file.")
+		}
+	}
+	return conf
 }
 
 func (cf * Configs) LoadFromFile() error {
@@ -65,6 +80,14 @@ func (cf *Configs) GetDataDir()string {
 
 func (cf *Configs) GetDefaultDir()string {
 	return filepath.Join(cf.WorkDir,"defaults")
+}
+
+func (cf * Configs) LoadDefaults()error {
+	configFile := filepath.Join(cf.WorkDir,"data","config.json")
+	os.Remove(configFile)
+	log.Info("Config file doesn't exist.Loading default config")
+	defaultConfigFile := filepath.Join(cf.WorkDir,"defaults","config.json")
+	return utils.CopyFile(defaultConfigFile,configFile)
 }
 
 func (cf *Configs) InitDefault() {

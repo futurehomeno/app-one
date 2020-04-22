@@ -5,13 +5,14 @@
       "label": {"en": "Param 1"},
       "val_t": "bool",
       "ui": {
-        "type": "radio",
+        "type": "list_radio",
         "select": [{"val": true,"label": {"en": "Option 1"}},{"val": false,"label": {"en": "Option 2"}}]
       },
       "val": {
         "default": false
       },
       "is_required": true,
+      "hidden":false,
       "config_point": "init"
     },
     {
@@ -19,13 +20,14 @@
       "label": {"en": "Parameter 2"},
       "val_t": "string",
       "ui": {
-        "type": "select",
+        "type": "select_horizontal",
         "select": [{"val": "o1","label": {"en": "Option 1"}},{"val": "o2","label":{"en": "Option 2"}}]
       },
       "val": {
         "default": "o1"
       },
       "is_required": true,
+      "hidden":false,
       "config_point": "any"
     },
     {
@@ -33,13 +35,14 @@
       "label": {"en": "Parameter 3"},
       "val_t": "str_map",
       "ui": {
-        "type": "multi_select",
+        "type": "list_checkbox",
         "select": [{"val": "o1","label": {"en": "Option 1"}},{"val": "o2","label": {"en": "Option 2"}},{"val":"o3", "label": {"en": "Option 3"}}]
       },
       "val": {
         "default": ["o1","o2"]
       },
       "is_required": true,
+      "hidden":false,
       "config_point": "init"
     },
     {
@@ -47,62 +50,67 @@
       "label": {"en": "Current time"},
       "val_t": "string",
       "ui": {
-        "type": "string"
+        "type": "input_string"
       },
       "val": {
         "default": ""
       },
       "is_required": false,
+      "hidden":false,
       "config_point": "any"
     },{
       "id": "param_5",
       "label": {"en": "Readonly text"},
       "val_t": "string",
       "ui": {
-        "type": "readonly"
+        "type": "input_readonly"
       },
       "val": {
         "default": "default"
       },
       "is_required": false,
+      "hidden":false,
       "config_point": "any"
     },{
       "id": "param_6",
       "label": {"en": "Number type param_5"},
       "val_t": "int",
       "ui": {
-        "type": "number"
+        "type": "input_number"
       },
       "val": {
         "default": 0
       },
       "is_required": false,
+      "hidden":false,
       "config_point": "any"
     }, {
       "id": "log_level",
       "label": {"en": "Set app log level"},
       "val_t": "string",
       "ui": {
-        "type": "select",
+        "type": "select_horizontal",
         "select": [{"val": "trace","label": {"en": "Trace"}},{"val": "debug","label": {"en": "Debug"}},{"val": "info","label":{"en": "Info"}}]
       },
       "val": {
         "default": "o1"
       },
       "is_required": true,
+      "hidden":false,
       "config_point": "any"
     },  {
       "id": "auth_type",
       "label": {"en": "Select auth method"},
       "val_t": "string",
       "ui": {
-        "type": "select",
+        "type": "select_horizontal",
         "select": [{"val": "password","label": {"en": "Password"}},{"val": "oauth2_code_grant","label":{"en": "OAuth code grant"}}]
       },
       "val": {
         "default": "password"
       },
       "is_required": true,
+      "hidden":false,
       "config_point": "any"
     }
 
@@ -116,7 +124,7 @@
         "intf_t": "cmd.system.sync",
         "val": "action1"
       },
-      "reload_config": true
+      "hidden":false
     },
     {
       "id":"reconnect",
@@ -126,7 +134,7 @@
         "intf_t": "cmd.system.reconnect",
         "val": "action2"
       },
-      "reload_config": true
+      "hidden":false
     },{
       "id":"factory_reset",
       "label": {"en": "Factory reset"},
@@ -135,30 +143,45 @@
         "intf_t": "cmd.app.factory_reset",
         "val": "action2"
       },
-      "reload_config": true
+      "hidden":false
+    },{
+      "id":"show_hide",
+      "label": {"en": "Show and hide"},
+      "req": {
+        "serv":"app-one",
+        "intf_t": "cmd.app.show_hide",
+        "val": "toggle"
+      },
+      "hidden":false
     }
 
   ],
   "ui_blocks": [
     {
+      "id": "1",
       "header": {"en": "App configuration"},
       "text": {"en": ""},
       "configs": ["param_1","param_2","param_3","param_5","param_6"],
-      "buttons": ["reconnect"],
-      "footer": {"en": "footer text"}
+      "buttons": ["reconnect","show_hide"],
+      "footer": {"en": "footer text"},
+      "hidden":false
     },
     {
+      "id": "security",
       "header": {"en": "Security"},
       "text": {"en": ""},
       "configs": ["param_4","log_level","auth_type"],
       "buttons": [],
-      "footer": {"en": "footer text"}
+      "footer": {"en": "footer text"},
+      "hidden":false
     },{
+      "id": "3",
       "header": {"en": "Factory reset"},
       "text": {"en": "The operation can't be undone"},
       "configs": [],
       "buttons": ["factory_reset"],
-      "footer": {"en": ""}
+      "footer": {"en": ""},
+      "hidden":false
     }
   ],
   "auth": {

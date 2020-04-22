@@ -3,7 +3,7 @@ Description=app-one
 
 [Service]
 Type=simple
-ExecStart=/opt/thingsplex/app-one/app-one -c data/config.json
+ExecStart=/opt/thingsplex/app-one/app-one
 User=app-one
 WorkingDirectory=/opt/thingsplex/app-one
 Restart=always

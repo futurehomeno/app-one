@@ -16,10 +16,12 @@ type FromFimpRouter struct {
 	instanceId   string
 	appLifecycle *model.Lifecycle
 	configs      *model.Configs
+	hideFlag     bool
 }
 
 func NewFromFimpRouter(mqt *fimpgo.MqttTransport,appLifecycle *model.Lifecycle,configs *model.Configs) *FromFimpRouter {
 	fc := FromFimpRouter{inboundMsgCh: make(fimpgo.MessageCh,5),mqt:mqt,appLifecycle:appLifecycle,configs:configs}
+	fc.hideFlag = false
 	fc.mqt.RegisterChannel("ch1",fc.inboundMsgCh)
 	return &fc
 }
@@ -150,9 +152,39 @@ func (fc *FromFimpRouter) routeFimpMessage(newMsg *fimpgo.Message) {
 				}
 				manifest.ConfigState = fc.configs
 			}
+
+			if uiBlock := manifest.GetUIBlock("security");uiBlock != nil {
+				uiBlock.Hidden = fc.hideFlag
+			}
+
+			if uiButton := manifest.GetButton("factory_reset");uiButton != nil {
+				uiButton.Hidden = fc.hideFlag
+			}
+
+			if uiConfig := manifest.GetAppConfig("param_1");uiConfig != nil {
+				uiConfig.Hidden = fc.hideFlag
+			}
+
 			msg := fimpgo.NewMessage("evt.app.manifest_report",model.ServiceName,fimpgo.VTypeObject,manifest,nil,nil,newMsg.Payload)
 			if err := fc.mqt.RespondToRequest(newMsg.Payload,msg); err != nil {
 				// if response topic is not set , sending back to default application event topic
+				fc.mqt.Publish(adr,msg)
+			}
+		case "cmd.app.show_hide":
+			if fc.hideFlag {
+				fc.hideFlag = false
+			}else {
+				fc.hideFlag = true
+			}
+			val := model.ButtonActionResponse{
+				Operation:       "cmd.app.show_hide",
+				OperationStatus: "ok",
+				Next:            "config",
+				ErrorCode:       "",
+				ErrorText:       "",
+			}
+			msg := fimpgo.NewMessage("evt.app.config_action_report",model.ServiceName,fimpgo.VTypeObject,val,nil,nil,newMsg.Payload)
+			if err := fc.mqt.RespondToRequest(newMsg.Payload,msg); err != nil {
 				fc.mqt.Publish(adr,msg)
 			}
 
